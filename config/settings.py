@@ -37,6 +37,7 @@ class Settings:
     min_estimate_hours: float = 1
     max_estimate_hours: float = 24
     type_min_sprint: dict = field(default_factory=lambda: {"qa": 2})
+    sprint_rules: list = field(default_factory=list)   # [{"match": ["keyword"], "min": 3, "max": 3}] from the document timeline
     output_dir: str = "outputs"
 
     @property

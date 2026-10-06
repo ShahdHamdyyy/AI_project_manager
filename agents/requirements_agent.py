@@ -44,7 +44,9 @@ class RequirementsAgent(BaseAgent):
         scope, text = ctx["scope"], ctx["text"]
         if scope == "project":
             return (f"Summarise this project document extract.\n\nDOCUMENT:\n{text}\n\n"
-                    "Rules: actors are user roles only; lists have at most 10 items of under 12 words; "
+                    "Rules: actors are user roles only and must include EVERY persona or role named in the document; "
+                    "mvp_scope must list EVERY in-scope item of the document (up to 12 items, under 15 words each); "
+                    "out_of_scope and other lists have at most 10 items of under 12 words; "
                     "assumptions may be implied by the document; duration_weeks is an integer.\n"
                     f"Return exactly this shape: " + example({
                         "name": "...", "summary": "1-2 sentences", "objective": "...", "duration_weeks": 4,
@@ -52,11 +54,15 @@ class RequirementsAgent(BaseAgent):
                         "assumptions": ["..."], "business_priority": "..."}) + "\n" + JSON_ONLY)
         if scope == "functional":
             return (f"Extract EVERY functional requirement below as its own item.\n\nTEXT:\n{text}\n\n"
-                    "Rules: one requirement per capability; title max 6 words; description max 15 words; "
+                    "Rules: one requirement per numbered item (FR-xx), same order, none skipped or merged; title max 8 words; "
+                    "description max 45 words and it MUST keep every number, percentage, amount, currency, time limit, role and "
+                    "named behavior of the item (never replace them by a generic sentence); "
                     "priority = critical|high|medium|low. Do not invent requirements.\n"
                     "Return exactly this shape: " + example({"requirements": [
                         {"title": "...", "description": "...", "priority": "high"}]}) + "\n" + JSON_ONLY)
         return (f"Extract EVERY non-functional requirement and every constraint below as its own item.\n\nTEXT:\n{text}\n\n"
-                "Rules: kind = non_functional or constraint; title max 8 words; description max 15 words.\n"
+                "Rules: one item per bullet; kind = non_functional or constraint; title max 8 words; description max 45 words and "
+                "it MUST keep every number and limit exactly (latency, percentile, connections, uptime, coverage, timeline, hours); "
+                "how the application is started or run is a non_functional requirement.\n"
                 "Return exactly this shape: " + example({"requirements": [
                     {"kind": "non_functional", "title": "...", "description": "...", "priority": "high"}]}) + "\n" + JSON_ONLY)

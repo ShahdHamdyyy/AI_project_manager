@@ -21,7 +21,9 @@ class ValidatorAgent(BaseAgent):
 
     def build_prompt(self, ctx):
         return (f"Review this project plan. Structure and references were ALREADY verified by code; look only for "
-                f"semantic problems (sprint goal not matching its tasks, missing important work, unrealistic ordering).\n\n"
+                f"semantic problems (sprint goal not matching its tasks, missing important work, unrealistic ordering). "
+                f"Compare each sprint ONLY with its own goal. Every note must name the sprint number or task title it is about; "
+                f"do not report a problem you cannot point to.\n\n"
                 f"PROJECT: {ctx['summary']}\nBUSINESS PRIORITY: {ctx['business_priority']}\n\nPLAN:\n{ctx['digest']}\n\n"
                 "Return exactly this shape: " + example({"verdict": "pass or concerns", "notes": ["max 5 short notes"]})
                 + "\n" + JSON_ONLY)

@@ -206,14 +206,37 @@ class Orchestrator:
         return self._agent_step(planned, "requirements", {"scope": scope, "text": text}, apply)
 
     def _epics(self, planned):
+        # constraints (timeline, scope, capacity, stack) shape the plan but are never epics
         ctx = {"summary": self.state.project.summary, "max_epics": self.settings.max_epics,
-               "requirements": [{"id": r.id, "title": r.title, "kind": r.kind.value} for r in self.state.requirements]}
+               "requirements": [{"id": r.id, "title": r.title, "kind": r.kind.value, "description": r.description}
+                                for r in self.state.requirements if r.kind.value != "constraint"]}
 
         def apply(st, out):
             msg = st.add_epics(out.epics, self.settings)
+            msg += self._cover_requirements(st)
             st.step_status["epics"] = "done"
             return msg
         return self._agent_step(planned, "epics", ctx, apply)
+
+    def _cover_requirements(self, st) -> str:
+        """Guarantee that every functional/non-functional requirement belongs to an epic (constraints never do).
+        A requirement the LLM forgot goes to the epic whose text shares the most words with it."""
+        constraint_ids = {r.id for r in st.requirements if r.kind.value == "constraint"}
+        for e in st.epics:
+            e.requirement_ids = [i for i in e.requirement_ids if i not in constraint_ids]
+        covered = {i for e in st.epics for i in e.requirement_ids}
+        words = lambda text: {w for w in text.lower().replace("&", " ").split() if len(w) > 3}
+        fixed = []
+        for r in st.requirements:
+            if r.kind.value == "constraint" or r.id in covered:
+                continue
+            req_words = words(r.title + " " + r.description)
+            best = max(st.epics, key=lambda e: len(req_words & words(e.name + " " + e.description)))
+            best.requirement_ids.append(r.id)
+            fixed.append(f"{r.id}->{best.id}")
+        if fixed:
+            log("VALIDATION", f"Requirements missing from the epics were attached by word overlap: {', '.join(fixed)}", 30)
+        return f", {len(fixed)} uncovered requirements attached" if fixed else ""
 
     # ================================================================== handlers: planning
     def _tasks(self, planned):
@@ -229,11 +252,12 @@ class Orchestrator:
             return self._agent_step(planned, "tasks", ctx, apply)
 
         epic = next(e for e in self.state.epics if e.id == p["epic_id"])
-        req_titles = [r.title for r in self.state.requirements if r.id in epic.requirement_ids]
+        reqs = [{"id": r.id, "title": r.title, "description": r.description}
+                for r in self.state.requirements if r.id in epic.requirement_ids]
         capacity = sum(m.capacity_hours_per_sprint for m in self.team.members if m.role.value != "project_manager")
-        budget = int(capacity * self.state.project.sprint_count * 0.55 / max(1, len(self.state.epics)))
+        budget = int(capacity * self.state.project.sprint_count * 0.75 / max(1, len(self.state.epics)))
         ctx = {"mode": "epic", "epic": {"name": epic.name, "description": epic.description}, "weeks": self.state.project.duration_weeks,
-               "requirement_titles": req_titles, "min_tasks": 3, "max_tasks": self.settings.max_tasks_per_epic, "hour_budget": budget}
+               "requirements": reqs, "min_tasks": 3, "max_tasks": self.settings.max_tasks_per_epic, "hour_budget": budget}
 
         def apply(st, out):
             msg = st.add_tasks(out.tasks, self.settings, epic_id=epic.id)

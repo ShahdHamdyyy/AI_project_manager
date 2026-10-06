@@ -31,7 +31,8 @@ class RiskAgent(BaseAgent):
         epics = "\n".join(f"{e['id']} {e['name']}" for e in ctx["epics"])
         return (f"Identify the main delivery risks of this project.\nPROJECT: {ctx['summary']}\n\n"
                 f"RISK AND DEPENDENCY NOTES FROM THE DOCUMENT:\n{ctx['text']}\n\nEPICS:\n{epics}\n\n"
-                "Rules: 5 to 8 risks; likelihood and impact are low|medium|high; mitigation max 20 words; "
+                "Rules: 5 to 8 risks; likelihood and impact are low|medium|high; mitigation max 25 words and it must be a concrete action "
+                "that fits the FIXED timeline and the FIXED team (never suggest hiring, adding people or extending the schedule); "
                 "epic_ids ONLY from the list above.\n"
                 "Return exactly this shape: " + example({"risks": [
                     {"title": "...", "description": "...", "likelihood": "medium", "impact": "high",

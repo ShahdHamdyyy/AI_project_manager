@@ -11,7 +11,7 @@
   "max_agent_attempts": 3,
   "max_repair_rounds": 2,
 
-  "max_context_chars": 3500,
+  "max_context_chars": 9000,
   "default_duration_weeks": 4,
   "sprint_length_weeks": 1,
   "utilization_target": 0.9,
@@ -25,5 +25,13 @@
   "max_estimate_hours": 24,
 
   "type_min_sprint": {"qa": 2},
+  "sprint_rules": [
+    {"match": ["partial refund", "coupon"], "min": 3},
+    {"match": ["multi-currency", "exchange rate"], "min": 3},
+    {"match": ["store credit", "reservation", "flash checkout"], "min": 3},
+    {"match": ["fraud", "dashboard"], "min": 3},
+    {"match": ["ticket creation", "create ticket"], "min": 2, "max": 2},
+    {"match": ["deactivation"], "min": 2, "max": 2}
+  ],
   "output_dir": "outputs"
 }

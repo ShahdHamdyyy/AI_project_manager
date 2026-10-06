@@ -35,7 +35,8 @@ class SprintAgent(BaseAgent):
         return (f"Plan {ctx['n']} one-week sprints for a {ctx['weeks']}-week MVP.\nTIMELINE FROM THE DOCUMENT:\n{ctx['timeline']}\n\n"
                 f"EPICS:\n{epics}\n\n"
                 f"Give every sprint number 1..{ctx['n']} a goal (max 15 words) and a milestone name. Also say in which sprint "
-                "each epic should START (foundation first; testing and release in the last sprints). Use ONLY the epic ids above.\n"
+                "each epic should START (foundation first; testing and release in the last sprints). Follow the TIMELINE text literally: "
+                "an epic must start no later than the sprint where the timeline says its work happens. Use ONLY the epic ids above.\n"
                 "Return exactly this shape: " + example({
                     "sprints": [{"number": 1, "goal": "...", "milestone": "..."}],
                     "epic_start": [{"epic_id": "EPIC-001", "sprint": 1}]}) + "\n" + JSON_ONLY)

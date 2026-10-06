@@ -36,6 +36,12 @@ def schedule_tasks(state, team, settings, epic_start: dict[str, int] | None = No
     placed: dict[str, int] = {}
     remaining = set(tasks)
 
+    def rule_for(t):
+        if t.type == TaskType.DESIGN:
+            return None
+        title = t.title.lower()
+        return next((r for r in settings.sprint_rules if any(k in title for k in r["match"])), None)
+
     def order_key(tid: str):
         t = tasks[tid]
         return (rank.get(tid, 9999), PRIORITY_ORDER[t.priority], epic_start.get(t.epic_id, 1), tid)
@@ -49,17 +55,23 @@ def schedule_tasks(state, team, settings, epic_start: dict[str, int] | None = No
         t = tasks[tid]
         role = TYPE_TO_ROLE[t.type]
         h = t.estimated_hours
-        earliest = max([1, epic_start.get(t.epic_id, 1), int(settings.type_min_sprint.get(t.type.value, 1))]
+        rule = rule_for(t)
+        start_hint = int(rule.get("min", 1)) if rule else epic_start.get(t.epic_id, 1)   # an explicit rule beats the LLM hint
+        earliest = max([1, start_hint, int(settings.type_min_sprint.get(t.type.value, 1))]
                        + [placed[d] for d in blockers[tid] if d in placed])
         earliest = min(earliest, n)
+        latest = min(n, int(rule["max"])) if rule and rule.get("max") else n
         cap = pools.get(role, 0.0)
 
         def fits(s, pool_limit, total_limit):
             return used_pool[s][role] + h <= pool_limit + 1e-9 and (total_limit is None or used_total[s] + h <= total_limit)
 
-        choice = (next((s for s in range(earliest, n + 1) if fits(s, cap * util, soft_total)), None)
-                  or next((s for s in range(earliest, n + 1) if fits(s, cap * util, None)), None)
-                  or next((s for s in range(earliest, n + 1) if fits(s, cap, None)), None))
+        def pick(hi):
+            return (next((s for s in range(earliest, hi + 1) if fits(s, cap * util, soft_total)), None)
+                    or next((s for s in range(earliest, hi + 1) if fits(s, cap * util, None)), None)
+                    or next((s for s in range(earliest, hi + 1) if fits(s, cap, None)), None))
+
+        choice = pick(latest) or (pick(n) if latest < n else None)
         if choice is None:
             choice = n
             log("VALIDATION", f"{tid} ({h:g}h {role.value}) does not fit any sprint >= {earliest}; placed in sprint {n} (over capacity)")

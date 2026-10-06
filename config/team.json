@@ -7,6 +7,6 @@
     {"id": "TEAM-005", "name": "Frontend Developer 2", "role": "frontend_developer", "skills": ["react", "dashboard", "charts", "responsive layout"],     "capacity_hours_per_sprint": 30},
     {"id": "TEAM-006", "name": "UI/UX Designer",       "role": "ui_ux_designer",     "skills": ["wireframes", "design system", "usability"],              "capacity_hours_per_sprint": 30},
     {"id": "TEAM-007", "name": "QA Engineer",          "role": "qa_engineer",        "skills": ["test plans", "api testing", "e2e testing", "regression"], "capacity_hours_per_sprint": 30},
-    {"id": "TEAM-008", "name": "DevOps Engineer",      "role": "devops_engineer",    "skills": ["docker", "ci/cd", "deployment", "logging"],              "capacity_hours_per_sprint": 30}
+    {"id": "TEAM-008", "name": "DevOps Engineer",      "role": "devops_engineer",    "skills": ["ci/cd", "deployment", "logging"],              "capacity_hours_per_sprint": 30}
   ]
 }

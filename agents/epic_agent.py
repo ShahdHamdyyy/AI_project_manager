@@ -26,9 +26,11 @@ class EpicAgent(BaseAgent):
         return EpicsOutput
 
     def build_prompt(self, ctx):
-        reqs = "\n".join(f"{r['id']} {r['title']} ({r['kind']})" for r in ctx["requirements"])
+        reqs = "\n".join(f"{r['id']} {r['title']} ({r['kind']}): {r['description']}" for r in ctx["requirements"])
         return (f"Group the requirements of this project into epics.\nPROJECT: {ctx['summary']}\n\nREQUIREMENTS:\n{reqs}\n\n"
-                f"Rules: 5 to {ctx['max_epics']} epics; every functional requirement belongs to at least one epic; "
+                f"Rules: 5 to {ctx['max_epics']} epics; EVERY requirement id listed above must appear in exactly one epic; "
+                "group by business area (not by technical layer) and keep related rules together, for example all refund rules "
+                "in one epic; non-functional requirements may share one quality/platform epic; "
                 "add epics for foundation (setup, database, authentication), quality assurance and release/deployment "
                 "when the requirements call for them; requirement_ids must come ONLY from the list above; "
                 "name max 6 words; description max 20 words.\n"
