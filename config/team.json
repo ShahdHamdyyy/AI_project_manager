@@ -1,0 +1,12 @@
+{
+  "members": [
+    {"id": "TEAM-001", "name": "Project Manager",      "role": "project_manager",    "skills": ["planning", "documentation", "coordination"],           "capacity_hours_per_sprint": 10},
+    {"id": "TEAM-002", "name": "Backend Developer 1",  "role": "backend_developer",  "skills": ["python", "rest api", "authentication", "postgresql"],   "capacity_hours_per_sprint": 30},
+    {"id": "TEAM-003", "name": "Backend Developer 2",  "role": "backend_developer",  "skills": ["python", "rest api", "search", "reporting", "postgresql"], "capacity_hours_per_sprint": 30},
+    {"id": "TEAM-004", "name": "Frontend Developer 1", "role": "frontend_developer", "skills": ["react", "forms", "authentication ui", "tickets ui"],     "capacity_hours_per_sprint": 30},
+    {"id": "TEAM-005", "name": "Frontend Developer 2", "role": "frontend_developer", "skills": ["react", "dashboard", "charts", "responsive layout"],     "capacity_hours_per_sprint": 30},
+    {"id": "TEAM-006", "name": "UI/UX Designer",       "role": "ui_ux_designer",     "skills": ["wireframes", "design system", "usability"],              "capacity_hours_per_sprint": 30},
+    {"id": "TEAM-007", "name": "QA Engineer",          "role": "qa_engineer",        "skills": ["test plans", "api testing", "e2e testing", "regression"], "capacity_hours_per_sprint": 30},
+    {"id": "TEAM-008", "name": "DevOps Engineer",      "role": "devops_engineer",    "skills": ["docker", "ci/cd", "deployment", "logging"],              "capacity_hours_per_sprint": 30}
+  ]
+}

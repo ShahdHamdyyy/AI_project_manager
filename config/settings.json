@@ -1,0 +1,29 @@
+{
+  "ollama_base_url": "http://localhost:11434",
+  "model": "qwen2.5:3b",
+  "temperature": 0.1,
+  "llm_timeout_seconds": 300,
+  "health_timeout_seconds": 5,
+  "keep_alive": "30m",
+
+  "max_iterations": 80,
+  "max_action_rounds": 6,
+  "max_agent_attempts": 3,
+  "max_repair_rounds": 2,
+
+  "max_context_chars": 3500,
+  "default_duration_weeks": 4,
+  "sprint_length_weeks": 1,
+  "utilization_target": 0.9,
+
+  "max_epics": 8,
+  "max_tasks_per_epic": 8,
+  "min_tasks_per_epic": 2,
+  "max_risks": 10,
+  "max_dependencies_per_task": 3,
+  "min_estimate_hours": 1,
+  "max_estimate_hours": 24,
+
+  "type_min_sprint": {"qa": 2},
+  "output_dir": "outputs"
+}

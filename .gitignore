@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+*.zip
+run.log
+execution_log.json
+.vscode/
+outputs/*.json
+outputs/*.log
+!outputs/.gitkeep
